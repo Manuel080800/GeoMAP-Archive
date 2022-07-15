@@ -291,11 +291,23 @@ function drawItemSelect(option) {
           }, onEachFeature: onEachFeature });
 
         // Creating objet for push:
-        var strutureCap = {
-          name: selected,
-          type: 'Amenity',
-          data: geo
-        };
+        var strutureCap =  null;
+
+        if (option == 0) {
+          strutureCap = {
+            name: selected,
+            type: 'Amenity',
+            data: geo
+          };
+        }
+
+        if (option == 1) {
+          strutureCap = {
+            name: selected,
+            type: 'Highway',
+            data: geo
+          };
+        }
 
         console.log(capMap);
         console.log(strutureCap);
