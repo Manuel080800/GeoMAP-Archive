@@ -1,78 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <!-- Aquí agregamos JQUERY (JS no es JQUERY con JQUERY te da acceso a las funciones que empiezan con $)-->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
-        <!-- Aquí le decimos que va a haber acentos y ñ -->
-        <meta charset="UTF-8">
+<head>
+    <!-- Aquí agregamos JQUERY (JS no es JQUERY con JQUERY te da acceso a las funciones que empiezan con $)-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
-        <!-- Estos son los estilos de leaflet (colores tamaños y p...) -->
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <!-- Aquí le decimos que va a haber acentos y ñ -->
+    <meta charset="UTF-8">
 
-       <link rel="stylesheet" type="text/css" href="mapa.css"> <!-- indicamos que es css y relacionamos el archivo -->
+    <!-- Estos son los estilos de leaflet (colores tamaños y p...) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 
-<!-- ------------------------------------------------------------ -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-crossorigin=""/>	
-<link rel="stylesheet" type="text/css" href="Leaflet-MiniMap-master/dist/Control.MiniMap.min.css">
-<link rel="stylesheet" type="text/css" href="Leaflet.Legend-master/src/leaflet.legend.css">
+    <link rel="stylesheet" type="text/css" href="mapa.css"> <!-- indicamos que es css y relacionamos el archivo -->
 
-        <!-- Para que podamos ver las herramientas de dibujo (iconos de la derecha)-->
-        <link rel="stylesheet" type="text/css" href="leaflet\draw.css"> <!-- indicamos que es css y relacionamos el archivo -->
+    <!-- ------------------------------------------------------------ -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin="" />
+    <link rel="stylesheet" type="text/css" href="Leaflet-MiniMap-master/dist/Control.MiniMap.min.css">
+    <link rel="stylesheet" type="text/css" href="Leaflet.Legend-master/src/leaflet.legend.css">
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.2/examples/list-groups/">
 
-     
-        <title>Mapa Mundo</title> 
-       
-    </head>
+    <link href="assets/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <body>
+    <style>
+        #box-lista {
+            position: relative;
+            display: flex;
+            justify-content: flex-end;
+            margin-right: 3%;
+            max-height: 200px;
+            overflow: overlay;
+            margin-top: 8%
+        }
 
-        <h1>Mapa Localizaciones</h1>
+        #elemetsBox {
+            max-height: 200px;
+            overflow: overlay;
+        }
 
-        <!-- Creamos un botón principal 001 -->
-        <!-- <input id="boton" type="boton" value="Capas biciruta" onClick="this.disabled=true"> -->
-        <input id="urlTxt" type="text" placeholder="URL de la consulta"> 
+        #internsData {
+            z-index: 10000;
+        }
 
-        <!-- aqui creo el enlace para abrir en una nueva pestaña el archivo con los datos geojson -->
-       <a href="newfile2.json" target="_blank" class="boton">Ver archivo</a>
-        <!-- aqui pongo otro enlace para descargar el mismo archivo -->
-        <a href="newfile2.json" download="export.Geojson" class="boton" >Descargar archivo</a>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
 
-     
-        <select name="" id="menubox"  onchange="javascript:drawItemSelect()" >
-            <option disabled selected>Opciones de Amenidades</option>
-            </select>
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
 
-            <select name="" id="menubox"  onchange="javascript:drawItemSelect()" >
-                <option disabled selected>Opciones de Highways</option>
-            </select>
+        .b-example-divider {
+            height: 3rem;
+            background-color: rgba(0, 0, 0, .1);
+            border: solid rgba(0, 0, 0, .15);
+            border-width: 1px 0;
+            box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+        }
 
-            <select name="" id="menubox"  onchange="javascript:drawItemSelect()" >
-                <option value="">Highways</option>
-            
-            </select>
+        .b-example-vr {
+            flex-shrink: 0;
+            width: 1.5rem;
+            height: 100vh;
+        }
 
-            <select name="" id="menubox"  onchange="javascript:drawItemSelect()" >
-                <option value="">Ways</option>
-            
-            </select>
+        .bi {
+            vertical-align: -.125em;
+            fill: currentColor;
+        }
 
-        <!-- Esta es la div donde se vaa ver el mapa -->
-        <div id="map" style="width:100%;"></div>
+        .nav-scroller {
+            position: relative;
+            z-index: 2;
+            height: 2.75rem;
+            overflow-y: hidden;
+        }
 
-<!-- para agregar el box del lista -->
+        .nav-scroller .nav {
+            display: flex;
+            flex-wrap: nowrap;
+            padding-bottom: 1rem;
+            margin-top: -1px;
+            overflow-x: auto;
+            text-align: center;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+    </style>
+
+    <link href="list-groups.css" rel="stylesheet">
 
 
+
+    <!-- Para que podamos ver las herramientas de dibujo (iconos de la derecha)-->
+    <link rel="stylesheet" type="text/css" href="leaflet\draw.css">
+    <!-- indicamos que es css y relacionamos el archivo -->
+
+
+    <title>Mapa Mundo</title>
+
+</head>
+
+<body>
+
+    <h1>Mapa Localizaciones</h1>
+
+    <!-- Creamos un botón principal 001 -->
+    <!-- <input id="boton" type="boton" value="Capas biciruta" onClick="this.disabled=true"> -->
+    <input id="urlTxt" type="text" placeholder="URL de la consulta">
+
+    <!-- aqui creo el enlace para abrir en una nueva pestaña el archivo con los datos geojson -->
+    <a href="newfile2.json" target="_blank" class="boton">Ver archivo</a>
+    <!-- aqui pongo otro enlace para descargar el mismo archivo -->
+    <a href="newfile2.json" download="export.Geojson" class="boton">Descargar archivo</a>
+
+
+    <select name="" id="menubox" onchange="javascript:drawItemSelect()">
+        <option disabled selected>Opciones de Amenidades</option>
+    </select>
+
+    <select name="" id="menubox" onchange="javascript:drawItemSelect()">
+        <option disabled selected>Opciones de Highways</option>
+    </select>
+
+    <select name="" id="menubox" onclick="javascript:addComponents()">
+        <option value="">Highways</option>
+
+    </select>
+
+    <select name="" id="menubox" onchange="javascript:drawItemSelect()">
+        <option value="">Ways</option>
+
+    </select>
+
+    <!-- Esta es la div donde se vaa ver el mapa -->
+    <div id="map" style="width:100%; top: 10px;">
+
+        <!-- para agregar el box del lista -->
+
+        <div id="box-lista">
+            <div class="d-flex gap-5 justify-content-center" id="elemetsBox">
+                <div class="list-group mx-0 w-auto" id="internsData">
+                    <!-- <label class="list-group-item d-flex gap-2">
+                        <input class="form-check-input flex-shrink-0" type="radio" name="listGroupRadios"
+                            id="listGroupRadios1" value="" checked>
+                        <span>
+                            First radio
+                            <small class="d-block text-muted">With support text underneath to add more detail</small>
+                        </span>
+                        &nbsp;
+                        &nbsp;
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/OOjs_UI_icon_clear-destructive.svg/1200px-OOjs_UI_icon_clear-destructive.svg.png" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0"
+                        onclick="javascript:alert('Hola')" style="cursor: pointer;">
+                        &nbsp;
+                    </label>
+                    <label class="list-group-item d-flex gap-2">
+                        <input class="form-check-input flex-shrink-0" type="radio" name="listGroupRadios"
+                            id="listGroupRadios2" value="">
+                        <span>
+                            Second radio
+                            <small class="d-block text-muted">Some other text goes here</small>
+                        </span>
+                    </label>
+                    <label class="list-group-item d-flex gap-2">
+                        <input class="form-check-input flex-shrink-0" type="radio" name="listGroupRadios"
+                            id="listGroupRadios3" value="">
+                        <span>
+                            Third radio
+                            <small class="d-block text-muted">And we end with another snippet of text</small>
+                        </span>
+                    </label> -->
+                </div>
+            </div>
+
+        </div>
 
 
         <!-- Make sure you put this AFTER Leaflet's CSS -->
-        
+
         <!-- agregadoooooooooooooooooooooos -->
         <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-        crossorigin=""></script>
+            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+            crossorigin=""></script>
         <script src="layers/barrios.js"></script>
 
 
@@ -81,32 +197,33 @@ crossorigin=""/>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js" crossorigin=""></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js" crossorigin=""></script>
-        <script src="leaflet.ajax.min.js"></script> 
+        <script src="leaflet.ajax.min.js"></script>
 
-        <script src="Leaflet-MiniMap-master/dist/Control.MiniMap.min.js"></script>   
-        <script src="Leaflet.Legend-master/src/leaflet.legend.js"></script> 
+        <script src="Leaflet-MiniMap-master/dist/Control.MiniMap.min.js"></script>
+        <script src="Leaflet.Legend-master/src/leaflet.legend.js"></script>
 
         <script src="mapa.js"> </script> <!-- igual referenciamos -->
 
-		<!-- Overlay Loading -->
-		<link rel="stylesheet" href="js/overlay/jquery.loadingModal.css">
-		<script src="js/overlay/jquery.loadingModal.js"></script>        
+        <!-- Overlay Loading -->
+        <link rel="stylesheet" href="js/overlay/jquery.loadingModal.css">
+        <script src="js/overlay/jquery.loadingModal.js"></script>
 
         <script>
 
-   			// Loading message init...
-			$('body').loadingModal({
-				animation: 'chasingDots',
-				text: '<b>Cargando</b>',
-				eText: ['Espere un momento por favor...', 'Seguimos trabajando, un momento por favor...', 'Disculpe, ésto está tardando un poco más de lo normal...<br>Un momento por favor...', '¡Algo ha salido muy mal!<br>Disculpe, por favor recargue la página y vuelva a intentarlo...' ]
-			});
+            // Loading message init...
+            $('body').loadingModal({
+                animation: 'chasingDots',
+                text: '<b>Cargando</b>',
+                eText: ['Espere un momento por favor...', 'Seguimos trabajando, un momento por favor...', 'Disculpe, ésto está tardando un poco más de lo normal...<br>Un momento por favor...', '¡Algo ha salido muy mal!<br>Disculpe, por favor recargue la página y vuelva a intentarlo...']
+            });
 
             // Autostart function set...
-			window.onload = (function(){$('body').loadingModal('hide');});
+            window.onload = (function () { $('body').loadingModal('hide'); });
 
         </script>
 
-     <!-- <script src="mapaCOPIAJS.js"></script> -->
+        <!-- <script src="mapaCOPIAJS.js"></script> -->
 
-    </body>
+</body>
+
 </html>

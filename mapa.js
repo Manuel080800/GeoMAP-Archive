@@ -7,6 +7,9 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' //mapa  url extraida
 }).addTo(map);
 
+// Arreglo dinamico por capas:
+var capMap = [];
+
 // Queremos activar el contro lde dibujo (el cuadrito en la parte superior derecha)...
 
 
@@ -56,10 +59,94 @@ function style(feature) {
      
   };
 }
+
+function resetMap () {
+  for (let index = 0; index < capMap.length; index++) {
+    // map.removeLayer(capMap[index]['data']);
+    // map.eachLayer( function(layer) {
+    capMap[index]['data'].removeFrom(map);
+      //capMap[index]['data'].clearLayers();
+    //   if ( layer.myTag &&  layer.myTag == capMap[index]['name']) {
+    //     map.removeLayer(layer)
+    //       }
+
+    //     });
+    console.log("Borrando");
+  }
+}
+
+function addComponents () {
+
+  resetMap();
+
+  for (let index = 0; index < capMap.length; index++) {
+    const e = document.createElement('div');
+    var structure =   "<label class='list-group-item d-flex gap-2'>" +
+                          "<input class='form-check-input flex-shrink-0' type='radio' name='listGroupRadios' id='listGroupRadios1' value='' checked>" +
+                            "<span>" +
+                                capMap[index]['name'].toUpperCase()  +
+                                "<small class='d-block text-muted'>" + capMap[index]['type'] + "</small>" +
+                          "</span>" +
+                          "&nbsp;" +
+                          "&nbsp;" +
+                          "<img src='https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/OOjs_UI_icon_clear-destructive.svg/1200px-OOjs_UI_icon_clear-destructive.svg.png' alt='twbs' width='32' height='32' class='rounded-circle flex-shrink-0' onclick='" + 'javascript:deleteCap(' + index + ')' + "' style='cursor: pointer;'>" +
+                          "&nbsp;" +
+                      "</label>";
+    e.innerHTML = structure; 
+    document.getElementById("internsData").appendChild(e);
+    capMap[index]['data'].addTo(map);
+  }
+}
+
+function updateComponentes () {
+  // Reset componentes:
+  document.getElementById("internsData").innerHTML = "";
+
+  // Update componentes:
+  this.addComponents()
+}
+
+function deleteCap (index) {
+  let clear = confirm("¿Seguro que desea eliminarlo del mapa?");
+
+  if (clear == true) {
+    resetMap();
+    capMap.splice(index, 1);
+    updateComponentes();
+  }
+}
+
+function checkCap (select) {
+  for (let index = 0; index < capMap.length; index++) {
+    if (select == capMap[index]['name']) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function drawItemSelect() {
 
   var combo = document.getElementById("menubox");
   var selected = combo.options[combo.selectedIndex].text;
+
+  if (checkCap(selected) == true) {
+    return;
+  }
+
+  function onEachFeature(feature, layer) {
+    console.log(feature)
+    if (feature.properties.amenity) {
+      var popupContent = "<p>" + feature.properties.amenity + "</p>";
+      layer.bindPopup(popupContent);
+    }
+
+    if (feature.properties.highway) {
+      var popupContent = "<p>" + feature.properties.highway + "</p>";
+      layer.bindPopup(popupContent);
+    }
+ }
+
   // Agregamos la layer con el cuadrito al mapa (pa que se va)...
   // Vamos a a consumir nuestrro web service entonces mostramos letrero de cargando...
   $('body').loadingModal("show");
@@ -97,9 +184,26 @@ function drawItemSelect() {
         shadowSize: [41, 41]
       });
 
+        // Test de modal:
+        var geo = L.geoJson.ajax("newfile2.json", { onEachFeature: onEachFeature });
+
+        // Creating objet for push:
+        var strutureCap = {
+          name: selected,
+          type: 'Amenity',
+          data: geo
+        };
+
+        console.log(capMap);
+        console.log(strutureCap);
+
+        capMap.push(strutureCap);
+        updateComponentes();
+
       
         // Leemos el goejson que creamos y lo agregamos al mapa...
-        L.geoJson.ajax("newfile2.json", {function(geoJsonPoint, latlng) {return L.marker(latlng,{icon: greenIcon} ); } }).addTo(map);
+        // L.geoJson.ajax("newfile2.json", {function(geoJsonPoint, latlng) {return L.marker(latlng,{icon: greenIcon} ); } }).addTo(map);
+        L.geoJson.ajax("newfile2.json", {function(geoJsonPoint, latlng) {return L.marker(latlng,{icon: greenIcon} ); } })
         //aqui se agregan las CAPAAAS
         // Mostramos en la consola la respuesta...
         console.log(result);
