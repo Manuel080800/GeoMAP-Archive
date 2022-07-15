@@ -82,14 +82,13 @@ function addComponents () {
   for (let index = 0; index < capMap.length; index++) {
     const e = document.createElement('div');
     var structure =   "<label class='list-group-item d-flex gap-2' onclick=" + '"javascript:seeCapSelect(' + "'" + capMap[index]['name'] + "', " + "'radio" + index + "'" + ')">' +
-                          "<input class='form-check-input flex-shrink-0' type='radio' name='listGroupRadios' id='radio" + index + "' value=''>" +
+                          "<div " + 'style="display: flex; width: 50%; justify-content: flex-start; align-items: center;"' + 
+                      "><input class='form-check-input flex-shrink-0' type='radio' name='listGroupRadios' id='radio" + index + "' value=''>&nbsp;" +
                             "<span>" +
                                 capMap[index]['name'].toUpperCase()  +
                                 "<small class='d-block text-muted'>" + capMap[index]['type'] + "</small>" +
-                          "</span>" +
-                          "&nbsp;" +
-                          "&nbsp;" +
-                          "<img src='https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/OOjs_UI_icon_clear-destructive.svg/1200px-OOjs_UI_icon_clear-destructive.svg.png' alt='twbs' width='32' height='32' class='rounded-circle flex-shrink-0' onclick='" + 'javascript:deleteCap(' + index + ')' + "' style='cursor: pointer;'>" +
+                          "</span></div>" +
+                          "<div "  + 'style="display: flex; width: 50%; justify-content: flex-end; align-items: center;"' + "><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/OOjs_UI_icon_clear-destructive.svg/1200px-OOjs_UI_icon_clear-destructive.svg.png' alt='twbs' width='32' height='32' class='rounded-circle flex-shrink-0' onclick='" + 'javascript:deleteCap(' + index + ')' + "' style='cursor: pointer;'></div>" +
                           "&nbsp;" +
                       "</label>";
     e.innerHTML = structure; 
@@ -210,9 +209,18 @@ function seeCapSelect (cap, id) {
   radio.checked = true;
 }
 
-function drawItemSelect() {
+function drawItemSelect(option) {
 
-  var combo = document.getElementById("menubox");
+  var combo = null;
+  
+  if (option == 0) {
+    combo = document.getElementById("menubox");
+  }
+  
+  if (option == 1) {
+    combo = document.getElementById("menubox2");
+  }
+
   var selected = combo.options[combo.selectedIndex].text;
 
   if (checkCap(selected) == true) {
@@ -389,6 +397,7 @@ map.on('draw:created', function (e) {
   // FIXME: cuando dibujas un cuadrado dejando presionado el boton del mouse se hace un cagadero...
   var dos = null;
   var menu = document.getElementById("menubox");
+  var menu2 = document.getElementById("menubox2");
   // Mandamos a llamar wl web service por post (que es lo mismo que ajax)
   $.post("http://localhost//0.1.php", // Cual es la url de nuestro web service
     { "Lat1": Lat2, "Lat2": Lat1, "Lon1": Lon1, "Lon2": Lon2 }).done( // Mandamos los parámwetros..
@@ -420,8 +429,14 @@ map.on('draw:created', function (e) {
             option.setAttribute("value", "value");
             let optionTexto = document.createTextNode(data[i][j]);
             option.appendChild(optionTexto);
-            menu.appendChild(option);
 
+            if (i == 0) {
+              menu.appendChild(option);
+            }
+            
+            if (i == 1) {
+              menu2.appendChild(option);
+            }
 
           }
         }
@@ -447,11 +462,17 @@ map.on('draw:created', function (e) {
 //removedor de los datos
 function removeOptions() {
   var j = document.getElementById("menubox");
+  var j2 = document.getElementById("menubox2");
   // alert("mensaje");
   // var i, L = selectElement.options.length - 1;
   for (i = j.options.length; i >= 0; i--) {
     j.remove(i);
   }
+
+  for (i = j2.options.length; i >= 0; i--) {
+    j2.remove(i);
+  }
+
 } // using the function: removeOptions(document.getElementById('DropList')
 
 
@@ -464,7 +485,31 @@ activities.addEventListener("click", function() {
     {
       console.log("entre en if");
 
-      drawItemSelect();
+      drawItemSelect(0);
+    }
+
+    // var combo = document.getElementById("menubox");
+    // var selected = combo.options[combo.selectedIndex].text;
+    // var selected2 = combo.options[0].text;
+
+    // if(selected == selected2)
+    // {
+    //   console.log("entre en if 2");
+
+    //   drawItemSelect();
+    // }
+});
+
+var activities2 = document.getElementById("menubox2");
+
+activities2.addEventListener("click", function() {
+    var options = activities2.options.length;
+   console.log(options);
+    if(options < 2)
+    {
+      console.log("entre en if");
+
+      drawItemSelect(1);
     }
 
     // var combo = document.getElementById("menubox");

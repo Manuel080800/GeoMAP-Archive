@@ -1,1 +1,1 @@
-{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"amenity":"table","level":"0"},"geometry":{"type":"Point","coordinates":[-99.1324242,19.4340792]}}]}
+{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"amenity":"nightclub","name":"Normandie","name:es":"Normandie"},"geometry":{"type":"Point","coordinates":[-99.1421979,19.4331613]}}]}
