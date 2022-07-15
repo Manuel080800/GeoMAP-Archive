@@ -81,8 +81,8 @@ function addComponents () {
 
   for (let index = 0; index < capMap.length; index++) {
     const e = document.createElement('div');
-    var structure =   "<label class='list-group-item d-flex gap-2'>" +
-                          "<input class='form-check-input flex-shrink-0' type='radio' name='listGroupRadios' id='listGroupRadios1' value='' checked>" +
+    var structure =   "<label class='list-group-item d-flex gap-2' onclick=" + '"javascript:seeCapSelect(' + "'" + capMap[index]['name'] + "', " + "'radio" + index + "'" + ')">' +
+                          "<input class='form-check-input flex-shrink-0' type='radio' name='listGroupRadios' id='radio" + index + "' value=''>" +
                             "<span>" +
                                 capMap[index]['name'].toUpperCase()  +
                                 "<small class='d-block text-muted'>" + capMap[index]['type'] + "</small>" +
@@ -103,7 +103,7 @@ function updateComponentes () {
   document.getElementById("internsData").innerHTML = "";
 
   // Update componentes:
-  this.addComponents()
+  addComponents()
 }
 
 function deleteCap (index) {
@@ -123,6 +123,91 @@ function checkCap (select) {
     }
   }
   return false;
+}
+
+function resetIcon () {
+  // Reset color:
+  var blueIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+
+  for (let index = 0; index < capMap.length; index++) {
+
+    capMap[index]['data'].eachLayer(function (layer) {  
+      if(layer.feature.properties.amenity == capMap[index]['name']) {    
+        layer.setIcon(blueIcon) 
+      }
+
+      if(layer.feature.properties.highway == capMap[index]['name']) {    
+        layer.setIcon(blueIcon) 
+      }
+    });
+
+    console.log("Recoloreando");
+  }
+}
+
+function seeCapSelect (cap, id) {
+
+  // Reset color:
+  var blueIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+
+  var greenIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+
+  for (let index = 0; index < capMap.length; index++) {
+
+    capMap[index]['data'].eachLayer(function (layer) {  
+      if(layer.feature.properties.amenity == capMap[index]['name']) {    
+        layer.setIcon(blueIcon) 
+      }
+
+      if(layer.feature.properties.highway == capMap[index]['name']) {    
+        layer.setIcon(blueIcon) 
+      }
+    });
+
+    console.log("Recoloreando");
+  }
+
+  for (let index = 0; index < capMap.length; index++) {
+
+    capMap[index]['data'].eachLayer(function (layer) {  
+      if(layer.feature.properties.amenity == cap) {    
+        layer.setIcon(greenIcon) 
+      }
+
+      if(layer.feature.properties.highway == cap) {    
+        layer.setIcon(greenIcon) 
+      }
+    });
+
+    console.log("Recoloreando el seleccionado");
+  }
+
+  resetMap();
+  updateComponentes();
+
+  var radio = document.getElementById(id);
+  radio.checked = true;
 }
 
 function drawItemSelect() {
@@ -185,7 +270,17 @@ function drawItemSelect() {
       });
 
         // Test de modal:
-        var geo = L.geoJson.ajax("newfile2.json", { onEachFeature: onEachFeature });
+        var geo = L.geoJson.ajax("newfile2.json", { pointToLayer: function(feature, latlng) {
+          var blueIcon = new L.Icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+          });
+          return L.marker(latlng, {icon: blueIcon});
+          }, onEachFeature: onEachFeature });
 
         // Creating objet for push:
         var strutureCap = {
@@ -198,6 +293,7 @@ function drawItemSelect() {
         console.log(strutureCap);
 
         capMap.push(strutureCap);
+        resetIcon();
         updateComponentes();
 
       
@@ -269,6 +365,12 @@ function drawItemSelect() {
 // Tomamos latitudes y longitudes de los cuadros hechos y llamamos al web service con los parámetros...
 map.on('draw:created', function (e) {
  removeOptions();
+
+ // Reseteamos el mapa y datos.
+ resetMap();
+ capMap = [];
+ updateComponentes();
+ 
   // Agregamos la layer con el cuadrito al mapa (pa que se va)...
   editableLayers.addLayer(e.layer);
   // Tomamos latitudes y longitudes...
